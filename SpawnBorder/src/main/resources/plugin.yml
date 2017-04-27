@@ -1,0 +1,10 @@
+name: SpawnBorder
+main: com.asteriskmonkey.spawnborder.SpawnBorder
+version: 0.0.1
+author: asteriskmonkey
+commands:
+  border:
+    description: Apply a border around the spawn at 0,0
+    usage: /border x y z distance material shape
+    #permission: spawnborder.border
+    #permission-message: You don't have permission to execute this

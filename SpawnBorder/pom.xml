@@ -15,6 +15,7 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
+			
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
@@ -31,9 +32,58 @@
 					</execution>
 				</executions>
 			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>3.0.1</version>
+				<executions>
+					<execution>
+						<id>copy</id>
+						<phase>install</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<artifactItems>
+						<artifactItem>
+							<groupId>${project.groupId}</groupId>
+							<artifactId>${project.artifactId}</artifactId>
+							<version>${project.version}</version>
+							<type>${project.packaging}</type>
+						</artifactItem>
+					</artifactItems>
+					<outputDirectory>/home/andy/Games/MineCraft/Servers/1.11.2/plugins/</outputDirectory>
+				</configuration>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.6.0</version>
+				<executions>
+					<execution>
+						<phase>install</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>screen</executable>
+							<arguments>
+								<argument>-S</argument>
+								<argument>server</argument>
+								<argument>-X</argument>
+								<argument>stuff</argument>
+								<argument>reload\nweather clear\ntime set 0\nsay Plugins reloaded\n</argument>
+							</arguments>
+						</configuration>
+					</execution>
+				</executions>
+				
+			</plugin>
 		</plugins>
-		<!-- <finalName>${project.groupId}-${project.artifactId}</finalName> -->
-		<!-- <outputDirectory>/home/andy/Games/MineCraft/Servers/1.11.2/plugins/</outputDirectory> -->
 	</build>
 
 	<repositories>

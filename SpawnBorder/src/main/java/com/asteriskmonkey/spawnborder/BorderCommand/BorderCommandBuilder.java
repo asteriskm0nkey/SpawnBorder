@@ -19,8 +19,7 @@ public final class BorderCommandBuilder {
 	public BorderCommandBuilder() {
 		borderCommand = new BorderCommand();
 		try {
-			this.setWorld("world"); // TODO read configuration to determine if
-									// this is the correct default overworld
+			this.setWorld("world"); // TODO read configuration to determine if this is the correct default world
 		} catch (InvalidOptionException e) {
 			throw new RuntimeException("Unexpected world name");
 		}
@@ -177,8 +176,6 @@ public final class BorderCommandBuilder {
 		if (borderCommand.getLength() == 0 || borderCommand.getWidth() == 0) {
 			throw new InvalidArgumentException("Border size is 0");
 		}
-
-		// FIXME reimplement clone as a copy constructor?
 
 		BorderCommand returnBC = new BorderCommand();
 		try {

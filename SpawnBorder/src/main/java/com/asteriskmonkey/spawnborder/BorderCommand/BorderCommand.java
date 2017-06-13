@@ -22,10 +22,12 @@ public class BorderCommand implements Cloneable {
 		opts.addOption("c", "color", true, "Choose a color for the material (if appropriate)");
 		opts.addOption("s", "size", true, "Choose a size for the border (default 200)");
 		opts.addOption("sh", "shape", true, "Choose a shape for the border (default square)");
-		opts.addOption("e", "center", true, "Choose a location for the center (default 0,0 or player location)");
+		opts.addOption("e", "center", true, "Choose a location for the center (default 0,60,0 or player location)");
+		//opts.addOption("env", "environment", false, "Choose an environment (defaults to player current environment or overworld");
 		opts.addOption("w", "world", true, "Choose a world to apply the border (default normal)");
 		opts.addOption("r", "removeTrees", false, "Remove trees along the border");
 		opts.addOption("si", "sinkBelowWater", false, "Sink the border below water");
+		
 		
 		StringBuilder usageBuilder = new StringBuilder();
 		usageBuilder.append("Usage");
@@ -54,11 +56,17 @@ public class BorderCommand implements Cloneable {
 	private World world;
 	private BorderShape shape = BorderShape.SQUARE;
 	private long centerX = 0;
+	private long guideY = 60;
 	private long centerZ = 0;
 	private boolean removeTrees = false;
 	private boolean sinkBelowWater = false;
+	//private Environment environment = Environment.NORMAL;
 	
 	// TODO border thickness?? Potentially big changes required in the shapeproducer algorithms
+	// Circle Borders would draw pixels made up of 4 squares
+	// XX
+	// XX
+	// Square Borders would just be double-thick
 	// to account for the additional locations nearby in sorting.
 	
 	public static String getUsageText() {
@@ -77,6 +85,11 @@ public class BorderCommand implements Cloneable {
 		return centerX;
 	}
 	
+	// Guide Y coordinate - the actual value used will depend on the environment and world
+	public long getGuideY() {
+		return guideY;
+	}
+	
 	public long getCenterZ() {
 		return centerZ;
 	}
@@ -92,6 +105,10 @@ public class BorderCommand implements Cloneable {
 	public World getWorld() {
 		return world;
 	}
+	
+	/*public Environment getEnvironment() {
+		return environment;
+	}*/
 	
 	public boolean getSinkBelowWater() {
 		return sinkBelowWater;
@@ -124,8 +141,9 @@ public class BorderCommand implements Cloneable {
 		this.colour = color;
 	}
 
-	protected void setCenter(long x, long z) {
+	protected void setCenter(long x, long guideY, long z) {
 		this.centerX = x;
+		this.guideY = guideY;
 		this.centerZ = z;
 	}
 
@@ -134,6 +152,11 @@ public class BorderCommand implements Cloneable {
 		this.world = world;
 	}
 	
+	/*
+	protected void setEnvironment(Environment env) {
+		this.environment = env;
+	}
+	*/
 
 	protected void setSinkBelowWater(boolean sinkBelowWater) {
 		this.sinkBelowWater = sinkBelowWater;
@@ -171,15 +194,15 @@ public class BorderCommand implements Cloneable {
 			res.append(length).append("x").append(width).append(" ");
 		}
 
-		res.append("at ").append(centerX).append(",").append(centerZ).append(" ");
+		res.append("at ").append(centerX).append(",").append(guideY).append("(?),").append(centerZ).append(" ");
 
 		if (world != null) {
 			res.append("in world ").append(world.getName()).append(" ");
+			
+			res.append("environment " + world.getEnvironment().toString().toLowerCase()).append(" ");
 		}
-
-		res.trimToSize();
-
-		return res.toString();
+		
+		return res.toString().trim();
 	}
 	
 	public static Options getCLIOptions() {

@@ -9,10 +9,18 @@ public class SmoothingCompletionStrategy implements BorderCompletionStrategy {
 	@Override
 	public LinkedList<Location> getCompletedBorderLocations(LinkedList<Location> skeletonBorder) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Not yet implemented");
 	}
 	
 	// TODO begin here... map out roughly what I want the border function to do, block by block
+	
+	/*
+	 * TODO link the last entry in the locations to the first entry? Would
+	 * potentially cause some breakages. Keep it as a soft constraint that
+	 * the end of the list joins to the start of the list May be useful
+	 * later with a smoothed border, but not so much right now.
+	 */
+
 	
 	// More advanced strategies can add gradients or smooth the land surrounding the border using the Diamond-Square method
 	

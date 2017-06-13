@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.World.Environment;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,6 +36,7 @@ public class BorderCommandBuilderTest {
 		
 		when(Bukkit.getWorld(anyString())).thenReturn(w);
 		when(w.getName()).thenReturn("world");
+		when(w.getEnvironment()).thenReturn(Environment.NORMAL);
 		
 		builder = new BorderCommandBuilder();
 		builder.setSize("5");
@@ -48,7 +50,7 @@ public class BorderCommandBuilderTest {
 
 	@Test
 	public void BorderCommandBuilder_BasicSize() throws InvalidArgumentException {
-		assertEquals("A SQUARE RED WOOL border 5x5 at 0,0 in world world ", builder.build().toString());
+		assertEquals("A SQUARE RED WOOL border 5x5 at 0,60(?),0 in world world environment normal", builder.build().toString());
 	}
 	
 	/* =================================
@@ -68,13 +70,13 @@ public class BorderCommandBuilderTest {
 		optionMap.put("material", "wool");
 		optionMap.put("color", "red");
 		optionMap.put("shape", "square");
-		optionMap.put("center", "0,0");
+		optionMap.put("center", "0,60,0");
 		optionMap.put("world", "world");
 		optionMap.put("sinkBelowWater", "");
 		optionMap.put("removeTrees", "");
 		
 		builder = new BorderCommandBuilder(optionMap);
-		assertEquals("A SQUARE RED WOOL border 7x7 at 0,0 in world world ", builder.build().toString());
+		assertEquals("A SQUARE RED WOOL border 7x7 at 0,60(?),0 in world world environment normal", builder.build().toString());
 	}
 	
 	@Test(expected=InvalidArgumentException.class)
@@ -91,14 +93,26 @@ public class BorderCommandBuilderTest {
 	@Test
 	public void BorderCommandBuilder_BasicCenter()
 			throws InvalidArgumentException, NumberFormatException, InvalidOptionException {
-		builder.setCenter("10,10");
-		assertEquals("A SQUARE RED WOOL border 5x5 at 10,10 in world world ", builder.build().toString());
+		builder.setCenter("10,100,10");
+		assertEquals("A SQUARE RED WOOL border 5x5 at 10,100(?),10 in world world environment normal", builder.build().toString());
 	}
 	
 	@Test(expected=InvalidOptionException.class)
 	public void BorderCommandBuilder_InvalidCenter()
 			throws InvalidArgumentException, NumberFormatException, InvalidOptionException {
 		builder.setCenter("");
+	}
+	
+	@Test
+	public void BorderCommandBuilder_DoublePrecisionCenter() throws InvalidOptionException, InvalidArgumentException {
+		builder.setCenter("10.856383834637839474,100.2312312365423673,10.836253238967623");
+		assertEquals("A SQUARE RED WOOL border 5x5 at 10,100(?),10 in world world environment normal", builder.build().toString());
+	}
+	
+	@Test
+	public void BorderCommandBuilder_DoublePrecisionCenterWithNegatives() throws InvalidOptionException, InvalidArgumentException {
+		builder.setCenter("-10.856383834637839474,100.2312312365423673,-10.836253238967623");
+		assertEquals("A SQUARE RED WOOL border 5x5 at -10,100(?),-10 in world world environment normal", builder.build().toString());
 	}
 	
 	/* =================================
@@ -108,7 +122,7 @@ public class BorderCommandBuilderTest {
 	public void BorderCommandBuilder_BasicShape()
 			throws InvalidArgumentException, NumberFormatException, InvalidOptionException {
 		builder.setShape("circle");
-		assertEquals("A CIRCLE RED WOOL border 5x5 at 0,0 in world world ", builder.build().toString());
+		assertEquals("A CIRCLE RED WOOL border 5x5 at 0,60(?),0 in world world environment normal", builder.build().toString());
 	}
 	
 	@Test(expected=IllegalArgumentException.class)
@@ -134,7 +148,7 @@ public class BorderCommandBuilderTest {
 	public void BorderCommandBuilder_BasicMaterial()
 			throws InvalidArgumentException, NumberFormatException, InvalidOptionException {
 		builder.setMaterial("WOOD");
-		assertEquals("A SQUARE WOOD border 5x5 at 0,0 in world world ", builder.build().toString());
+		assertEquals("A SQUARE WOOD border 5x5 at 0,60(?),0 in world world environment normal", builder.build().toString());
 	}
 
 	@Test(expected = InvalidOptionException.class)
@@ -147,7 +161,7 @@ public class BorderCommandBuilderTest {
 	public void BorderCommandBuilder_BasicMaterial_lowercase()
 			throws InvalidArgumentException, NumberFormatException, InvalidOptionException {
 		builder.setMaterial("glass");
-		assertEquals("A SQUARE GLASS border 5x5 at 0,0 in world world ", builder.build().toString());
+		assertEquals("A SQUARE GLASS border 5x5 at 0,60(?),0 in world world environment normal", builder.build().toString());
 	}
 	
 	/* =================================
@@ -158,7 +172,7 @@ public class BorderCommandBuilderTest {
 	public void BorderCommandBuilder_BasicColour()
 			throws InvalidArgumentException, NumberFormatException, InvalidOptionException {
 		builder.setColor("green");
-		assertEquals("A SQUARE GREEN WOOL border 5x5 at 0,0 in world world ", builder.build().toString());
+		assertEquals("A SQUARE GREEN WOOL border 5x5 at 0,60(?),0 in world world environment normal", builder.build().toString());
 	}
 
 	@Test(expected = InvalidOptionException.class)

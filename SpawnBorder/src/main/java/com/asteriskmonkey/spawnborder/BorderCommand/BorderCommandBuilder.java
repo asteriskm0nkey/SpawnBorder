@@ -1,6 +1,8 @@
 package com.asteriskmonkey.spawnborder.BorderCommand;
 
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
 
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
@@ -12,6 +14,8 @@ import com.asteriskmonkey.spawnborder.Exceptions.InvalidArgumentException;
 import com.asteriskmonkey.spawnborder.Exceptions.InvalidOptionException;
 
 public final class BorderCommandBuilder {
+	private static final long MINGUIDEY = 2;
+
 	private BorderCommand borderCommand;
 
 	private int minSize = 2;
@@ -49,6 +53,9 @@ public final class BorderCommandBuilder {
 			case "world":
 				setWorld(optVal);
 				break;
+			/*case "environment":
+				setEnvironment(optVal);
+				break;*/
 			case "sinkBelowWater":
 				setSinkBelowWater(true);
 				break;
@@ -61,6 +68,18 @@ public final class BorderCommandBuilder {
 		}
 	}
 
+	/*
+	private BorderCommandBuilder setEnvironment(String optVal) throws InvalidOptionException {
+		Environment envi = Environment.valueOf(optVal);
+		if (envi == null) {
+			throw new InvalidOptionException("Invalid environment '" + optVal + "'");
+		}
+		
+		borderCommand.setEnvironment(envi);
+		return this;
+	}
+	*/
+
 	public BorderCommandBuilder setRemoveTrees(boolean b) {
 		borderCommand.setRemoveTrees(b);
 		return this;
@@ -71,20 +90,23 @@ public final class BorderCommandBuilder {
 		return this;
 	}
 
-	public BorderCommandBuilder setSize(String sizeStr) throws InvalidOptionException, NumberFormatException {
+	public BorderCommandBuilder setSize(String sizeStr) throws InvalidOptionException {
 		// Format can be of the form: n or x,z
 
 		int length = 0;
 		int width = 0;
-		int dividerLoc = sizeStr.indexOf(",");
-		if (dividerLoc > 0) {
-			length = Integer.parseInt(sizeStr.substring(0, dividerLoc));
-			width = Integer.parseInt(sizeStr.substring(dividerLoc + 1, sizeStr.length()));
-
-		} else {
-			int size = Integer.parseInt(sizeStr);
-			length = size;
-			width = size;
+		
+		try (Scanner sizeScanner = new Scanner(sizeStr)) {
+			sizeScanner.useDelimiter(",");
+			
+			length = sizeScanner.nextInt();
+			try {
+				width = sizeScanner.nextInt();
+			} catch (NoSuchElementException e) {
+				width = length;
+			}
+		} catch (NoSuchElementException e) {
+			throw new InvalidOptionException("Invalid size option + '" + sizeStr + "'");
 		}
 
 		return this.setSize(length, width);
@@ -94,7 +116,7 @@ public final class BorderCommandBuilder {
 		if (length > minSize && width > minSize) {
 			borderCommand.setSize(length, width);
 		} else {
-			throw new InvalidOptionException("Invalid size");
+			throw new InvalidOptionException("Size too small - minimum is " + minSize);
 		}
 		return this;
 	}
@@ -104,27 +126,44 @@ public final class BorderCommandBuilder {
 		if (m != null) {
 			borderCommand.setMaterial(m);
 		} else {
-			throw new InvalidOptionException("Invalid material");
+			throw new InvalidOptionException("Invalid material '" + materialName + "'");
 		}
 		return this;
 	}
 
-	public BorderCommandBuilder setCenter(String centerStr) throws InvalidOptionException {
-		long x = 0;
-		long z = 0;
+	public BorderCommandBuilder setCenter(String centreStr) throws InvalidOptionException {
+		long centreX = 0;
+		long guideY = 0;
+		long centre = 0;
+		/*
 		int dividerLoc = centerStr.indexOf(",");
 		// TODO more error checking on this string
 		if (centerStr.length() == 0 || dividerLoc == -1) {
 			throw new InvalidOptionException("Invalid format for option");
 		}
 		x = Long.parseLong(centerStr.substring(0, dividerLoc));
-		z = Long.parseLong(centerStr.substring(dividerLoc + 1, centerStr.length()));
-
-		return this.setCenter(x, z);
+		y = Long.parseLong(centreStr.)
+		z = Long.parseLong(centerStr.substring(dividerLoc + 1, centerStr.length()));*/
+		
+		try (Scanner coordScanner = new Scanner(centreStr)) {
+			coordScanner.useDelimiter(",");
+			
+			centreX = new Double(coordScanner.nextDouble()).longValue();
+			guideY = new Double(coordScanner.nextDouble()).longValue();
+			centre = new Double(coordScanner.nextDouble()).longValue();
+			
+			if (guideY < MINGUIDEY) {
+				throw new InvalidOptionException("Invalid Y value '" + guideY + "'");
+			}
+		} catch (NoSuchElementException e) {
+			throw new InvalidOptionException("Invalid format for center '" + centreStr + "'");
+		}
+		
+		return this.setCenter(centreX, guideY, centre);
 	}
 
-	public BorderCommandBuilder setCenter(long x, long z) {
-		borderCommand.setCenter(x, z);
+	public BorderCommandBuilder setCenter(long centrex, long guideY, long centrez) {
+		borderCommand.setCenter(centrex, guideY, centrez);
 		return this;
 	}
 
@@ -134,7 +173,7 @@ public final class BorderCommandBuilder {
 			BorderShape b = BorderShape.valueOf(shape.toUpperCase());
 			borderCommand.setShape(b);
 		} catch (IllegalArgumentException e) {
-			throw new IllegalArgumentException("Shape not defined");
+			throw new IllegalArgumentException("Shape not defined '" + shape + "'");
 		}
 		return this;
 	}
@@ -143,7 +182,7 @@ public final class BorderCommandBuilder {
 
 		World w = Bukkit.getWorld(world);
 		if (w == null) {
-			throw new InvalidOptionException("Invalid world choice");
+			throw new InvalidOptionException("Invalid world choice + '" + world + "'");
 		}
 
 		borderCommand.setWorld(w);
@@ -154,7 +193,7 @@ public final class BorderCommandBuilder {
 	public BorderCommandBuilder setColor(String colour) throws InvalidOptionException {
 		
 		if (colour.length() == 0) {
-			throw new InvalidOptionException("Invalid colour - 0 length string");
+			throw new InvalidOptionException("Invalid colour ''");
 		}
 		
 		DyeColor d = null;
@@ -162,7 +201,7 @@ public final class BorderCommandBuilder {
 			 d = DyeColor.valueOf(colour.toUpperCase());
 		} catch (IllegalArgumentException e) {
 			// valueOf throws exception if the colour doesn't exist.
-			throw new InvalidOptionException("Invalid colour");
+			throw new InvalidOptionException("Invalid colour + '" + colour + "'");
 		}
 
 		if (d != null) {

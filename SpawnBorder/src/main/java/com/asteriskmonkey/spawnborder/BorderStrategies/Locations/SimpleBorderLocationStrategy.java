@@ -11,10 +11,10 @@ import com.asteriskmonkey.spawnborder.BorderStrategies.Locations.Factory.ShapeBo
 public class SimpleBorderLocationStrategy implements BorderLocationStrategy {
 
 	@Override
-	public LinkedList<Location> getBorderLocations(World world, long centreX, long centreZ, int length, int width, BorderCommand.BorderShape shape) {
+	public LinkedList<Location> getBorderLocations(World world, long centreX, long guideY, long centreZ, int length, int width, BorderCommand.BorderShape shape) {
 		
 		ShapeBorderFactory factory = new ShapeBorderFactory();
-		LinkedList<Location> locations = factory.getLocationList(world, centreX, centreZ, length, width, shape);
+		LinkedList<Location> locations = factory.getLocationList(world, centreX, guideY, centreZ, length, width, shape);
 		return locations;
 	}
 

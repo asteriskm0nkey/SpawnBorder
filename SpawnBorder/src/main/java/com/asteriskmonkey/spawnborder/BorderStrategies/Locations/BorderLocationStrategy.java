@@ -8,5 +8,5 @@ import org.bukkit.World;
 import com.asteriskmonkey.spawnborder.BorderCommand.BorderCommand;
 
 public interface BorderLocationStrategy {
-	public LinkedList<Location> getBorderLocations(World world, long centreX, long centreZ, int length, int width, BorderCommand.BorderShape shape);
+	public LinkedList<Location> getBorderLocations(World world, long centreX, long centreY, long centreZ, int length, int width, BorderCommand.BorderShape shape);
 }

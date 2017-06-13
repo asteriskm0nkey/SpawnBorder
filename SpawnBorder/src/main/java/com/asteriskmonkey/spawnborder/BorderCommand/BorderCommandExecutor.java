@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -15,7 +16,9 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.material.Colorable;
 import org.bukkit.material.MaterialData;
+import org.bukkit.scheduler.BukkitScheduler;
 
+import com.asteriskmonkey.spawnborder.SpawnBorder;
 import com.asteriskmonkey.spawnborder.BorderStrategies.Completion.BorderCompletionStrategy;
 import com.asteriskmonkey.spawnborder.BorderStrategies.Locations.BorderLocationStrategy;
 import com.asteriskmonkey.spawnborder.Exceptions.InvalidArgumentException;
@@ -33,28 +36,19 @@ public class BorderCommandExecutor {
 
 	// TODO becoming spaghetti code. Refactor
 
-	
-	/* Tree selection in Minecraft.
-		Add a separate collection of wood and leaf parts of the tree.
-		Parse the wood and count the number of trunks? Thicker trunks count as 1.
-		
-		For columns of the border material, where there is something vertical, may be able to use one of the facing properties to give the blocks under it a material, if they are exposed and between the block and the next block is on a different level.
-		
-		Sorting of blocks - sort by X, Y and Z. How would a rubik's cube be sorted??
-		Would allow the blocks to be stored in a Tree and filling in gaps between elements for the column idea above would be easier
-	 */
-	
+
+
 	private BorderLocationStrategy locationStrategy;
 	private BorderCompletionStrategy completionStrategy;
-	
+
 	public BorderCommandExecutor(BorderLocationStrategy bls, BorderCompletionStrategy bcs) {
 		this.locationStrategy = bls;
 		this.completionStrategy = bcs;
 	}
-	
+
 	public void execute(BorderCommand bc) throws InvalidArgumentException {
 		// parse and execute the BorderCommand on the specific World and realm
-		
+
 		Material borderMaterial = bc.getMaterial();
 		DyeColor borderColor = bc.getColor();
 
@@ -62,55 +56,66 @@ public class BorderCommandExecutor {
 			throw new RuntimeException("Invalid World defined");
 		}
 
-		// The basic skeleton of the border, with a block on each x and z location, but possibly
-		// missing blocks within the y axis that would make the list a complete border.
-		LinkedList<Location> basicBorderLocs = locationStrategy.getBorderLocations(bc.getWorld(),
-				bc.getCenterX(), bc.getCenterZ(), bc.getLength(), bc.getWidth(), bc.getShape());
-		
-		// The completed border, depending on implementation, should fill in these gaps to create a solid line
+		// The basic skeleton of the border, with a block on each x and z
+		// location, but possibly missing blocks within the y axis that would make the
+		// list a complete border - the completion strategy fills in the gaps in the y axis
+		LinkedList<Location> basicBorderLocs = locationStrategy.getBorderLocations(bc.getWorld(), bc.getCenterX(), bc.getGuideY(),
+				bc.getCenterZ(), bc.getLength(), bc.getWidth(), bc.getShape());
+
+		// The completed border, depending on implementation, should fill in
+		// these gaps to create a solid line
 		LinkedList<Location> completedLocations = completionStrategy.getCompletedBorderLocations(basicBorderLocs);
-		
-		
-		
+
 		if (bc.getRemoveTrees()) {
-			//removeTrees(highestBlocks);
+			// removeTrees(highestBlocks);
 		} else {
-			//sinkBelowTrees(highestBlocks);
-		}
-		
-		if (bc.getSinkBelowWater()) {
-			//sinkBelowWater(highestBlocks);
+			// sinkBelowTrees(highestBlocks);
 		}
 
-		for (Location l : completedLocations) {
-			Block b = l.getBlock();
-			b.setType(borderMaterial);
-			
-			Class<? extends MaterialData> md = borderMaterial.getData();
-			if (Colorable.class.isAssignableFrom(md)) {
-				// This material implements colorable, so assign it's color
-				
-				switch (borderMaterial) {
-				case WOOL: 
-					b.setData(borderColor.getWoolData());
-					break;
-				default:
-					b.setData(borderColor.getDyeData());
-				}
-			}
+		if (bc.getSinkBelowWater()) {
+			// sinkBelowWater(highestBlocks);
 		}
-		
+
+		BukkitScheduler bs = Bukkit.getScheduler();
+
+		int i = 0;
+		for (Location l : completedLocations) {
+			i++;
+			bs.runTaskLater(
+				SpawnBorder.getPlugin(SpawnBorder.class),
+				() -> {
+					//System.out.println(l.getWorld() + ": " + l.getBlockX() + "," + l.getBlockY() + "," + l.getBlockZ());
+					Block b = l.getBlock();
+					b.setType(borderMaterial);
+	
+					Class<? extends MaterialData> md = borderMaterial.getData();
+					if (Colorable.class.isAssignableFrom(md)) {
+						// This material implements colorable, so assign it's color
+	
+						switch (borderMaterial) {
+						case WOOL:
+							b.setData(borderColor.getWoolData());
+							break;
+						default:
+							b.setData(borderColor.getDyeData());
+						}
+					}
+				},
+				i * 5L);
+		}
+
 		// TODO check the material type.
 		// If it's water, sink the border, and check the surrounding blocks for
 		// where a column of material is necessary
 		// trim away long grass
 		// remove trees that overlap the border
 
-		// TODO consider caves and underground areas - include the spawn ring for entrances etc for people that
+		// TODO consider caves and underground areas - include the spawn ring
+		// for entrances etc for people that
 		// venture into spawn caves?
 
 	}
-	
+
 	private void sinkBelowMaterial(List<Block> blocks, List<Material> materials) {
 		ListIterator<Block> li = blocks.listIterator();
 		while (li.hasNext()) {
@@ -128,7 +133,7 @@ public class BorderCommandExecutor {
 		Material[] materials = { Material.LEAVES, Material.WOOD, Material.AIR };
 		sinkBelowMaterial(blocks, Arrays.asList(materials));
 	}
-	
+
 	private void sinkBelowWater(List<Block> blocks) {
 		Material[] materials = { Material.WATER, Material.AIR };
 		sinkBelowMaterial(blocks, Arrays.asList(materials));
@@ -136,10 +141,11 @@ public class BorderCommandExecutor {
 
 	private void removeTrees(List<Block> highestBlocks) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
-	// Pass in a Block, get back the correct block if it was a tree or water source etc
+	// Pass in a Block, get back the correct block if it was a tree or water
+	// source etc
 	private Block getBlock(World w, int x, int z) {
 		int y = w.getHighestBlockYAt(x, z) - 1;
 		// We want the ground rather than the open air or grass block
@@ -166,18 +172,38 @@ public class BorderCommandExecutor {
 		for (int xCheck = b.getX() - 1; xCheck <= b.getX() + 1; xCheck++) {
 			for (int yCheck = b.getY() - 1; yCheck <= b.getY() + 1; yCheck++) {
 				for (int zCheck = b.getZ() - 1; zCheck <= b.getZ() + 1; zCheck++) {
-					
-					// Don't bother adding the selected block to the list of surrounding blocks
+
+					// Don't bother adding the selected block to the list of
+					// surrounding blocks
 					if (xCheck != b.getX() || yCheck != b.getY() || zCheck != b.getZ()) {
 						surroundingBlockList.add(w.getBlockAt(xCheck, yCheck, zCheck));
 					}
 				}
 			}
 		}
-		
+
 		return surroundingBlockList;
 	}
 
+	
+	
+	
+	/*
+	 * Tree selection in Minecraft. Add a separate collection of wood and leaf
+	 * parts of the tree. Parse the wood and count the number of trunks? Thicker
+	 * trunks count as 1.
+	 * 
+	 * For columns of the border material, where there is something vertical,
+	 * may be able to use one of the facing properties to give the blocks under
+	 * it a material, if they are exposed and between the block and the next
+	 * block is on a different level.
+	 * 
+	 * Sorting of blocks - sort by X, Y and Z. How would a rubik's cube be
+	 * sorted?? Would allow the blocks to be stored in a Tree and filling in
+	 * gaps between elements for the column idea above would be easier
+	 */
+	
+	
 	// Get a list of all blocks that represent the scope of a whole tree
 	private List<Block> selectTree(World w, int x, int y, int z) {
 		// TODO check to see if this is a valid tree, for example it hasn't been
@@ -195,18 +221,19 @@ public class BorderCommandExecutor {
 
 		List<Block> blocksToCheck = new ArrayList<>();
 		Set<Block> blocksChecked = new HashSet<>();
-		
+
 		blocksToCheck.add(blockInTree);
-		
+
 		ListIterator<Block> li = blocksToCheck.listIterator();
 		while (li.hasNext()) {
-			
-			//Get and check the block
+
+			// Get and check the block
 			Block block = li.next();
-			
-			// Ensure that it's surrounding blocks are added to the appropriate lists			
+
+			// Ensure that it's surrounding blocks are added to the appropriate
+			// lists
 			List<Block> surroundingBlocks = getSurroundingBlocks(blockInTree);
-			
+
 			for (Block surroundingBlock : surroundingBlocks) {
 				if (!blocksChecked.contains(surroundingBlock) && !blocksToCheck.contains(surroundingBlock)) {
 					li.add(surroundingBlock);
@@ -218,16 +245,17 @@ public class BorderCommandExecutor {
 			if (blMat == Material.WOOD || blMat == Material.LEAVES) {
 				treeSelection.add(block);
 			}
-			
+
 			if (treeSelection.size() > 200) {
-				// basic check to prevent dismantling a whole forest. TODO Consider throwing something
+				// TODO basic check to prevent dismantling a whole forest. 
+				// Consider throwing something
 				return treeSelection;
 			}
-			
+
 			// Remove this block from the list of blocks to check
 			li.remove();
 		}
-		
+
 		return treeSelection;
 	}
 

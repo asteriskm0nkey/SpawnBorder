@@ -3,8 +3,6 @@ package com.asteriskmonkey.spawnborder.BorderStrategies.Locations.Factory;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyDouble;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.LinkedList;
@@ -12,7 +10,6 @@ import java.util.List;
 
 import org.bukkit.Location;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;

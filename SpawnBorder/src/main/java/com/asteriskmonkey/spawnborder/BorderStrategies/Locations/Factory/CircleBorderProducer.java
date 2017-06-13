@@ -1,8 +1,6 @@
 package com.asteriskmonkey.spawnborder.BorderStrategies.Locations.Factory;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -11,7 +9,7 @@ public class CircleBorderProducer {
 	
 	// Bresenham Ellipse Algorithm
 	// https://sites.google.com/site/ruslancray/lab/projects/bresenhamscircleellipsedrawingalgorithm/bresenham-s-circle-ellipse-drawing-algorithm
-	public static LinkedList<Location> getLocations (World world, long centreX, long centreZ, int length, int width)
+	public static LinkedList<Location> getLocations (World world, long centreX, long guideY, long centreZ, int length, int width)
 	{
 		LinkedList<Location> locations = new LinkedList<>();
 		
@@ -21,10 +19,10 @@ public class CircleBorderProducer {
 	    		width * width * x <= length * length * z;
 	    		x++)
 	    {
-	        DrawPixel(locations, world, (centreX + x), (centreZ + z));
-	        DrawPixel(locations, world, (centreX - x), (centreZ + z));
-	        DrawPixel(locations, world, (centreX + x), (centreZ - z));
-	        DrawPixel(locations, world, (centreX - x), (centreZ - z));
+	        DrawPixel(locations, world, (centreX + x), guideY, (centreZ + z));
+	        DrawPixel(locations, world, (centreX - x), guideY, (centreZ + z));
+	        DrawPixel(locations, world, (centreX + x), guideY, (centreZ - z));
+	        DrawPixel(locations, world, (centreX - x), guideY, (centreZ - z));
 	        
 	        if (sigma >= 0)
 	        {
@@ -40,10 +38,10 @@ public class CircleBorderProducer {
 	    		length * length * z <= width * width * x;
 	    		z++)
 	    {
-	        DrawPixel (locations, world, (centreX + x), (centreZ + z));
-	        DrawPixel (locations, world, (centreX - x), (centreZ + z));
-	        DrawPixel (locations, world, (centreX + x), (centreZ - z));
-	        DrawPixel (locations, world, (centreX - x), (centreZ - z));
+	        DrawPixel (locations, world, (centreX + x), guideY, (centreZ + z));
+	        DrawPixel (locations, world, (centreX - x), guideY, (centreZ + z));
+	        DrawPixel (locations, world, (centreX + x), guideY, (centreZ - z));
+	        DrawPixel (locations, world, (centreX - x), guideY, (centreZ - z));
 	        if (sigma >= 0) 
 	        {
 	            sigma += (4 * width * width) * (1 - x);
@@ -58,31 +56,15 @@ public class CircleBorderProducer {
 	    return locations;
 	}
 	
-	private static void DrawPixel(LinkedList<Location> locations, World world, long x, long z, char xSign, char zSign) {
-		
-		Location l = getLocation(world, x, z);
-        if (!locations.contains(l)) {
-        	if (xSign == '+' && zSign == '+') {
-        		locations.add(l);
-        	} else if (xSign == '-' && zSign == '+') {
-        		locations.add(l);
-        	} else if (xSign == '+' && zSign == '-') {
-        		locations.add(l);
-        	} else if (xSign == '-' && zSign == '-') {
-        		locations.add(l);
-        	} 
-		}
-	}
-	
-	private static void DrawPixel(LinkedList<Location> locations, World world, long x, long z) {
-		Location l = getLocation(world, x, z);
+	private static void DrawPixel(LinkedList<Location> locations, World world, long x, long yGuide, long z) {
+		Location l = getLocation(world, x, yGuide, z);
         if (!locations.contains(l)) {
 			locations.add(l);
 		}
 	}
 	
-	private static Location getLocation(World world, long x, long z) {
-		long y = ShapeBorderFactory.getHighestBlockYAt(world, x, z);
-		return new Location(world, x, y, z);
+	private static Location getLocation(World world, long x, long yGuide, long z) {
+		long highestY = LocationHelper.getHighestBlockYAt(world, x, yGuide, z);
+		return new Location(world, x, highestY, z);
 	}
 }

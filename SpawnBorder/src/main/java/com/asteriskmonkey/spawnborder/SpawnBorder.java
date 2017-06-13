@@ -10,6 +10,8 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.World.Environment;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -65,7 +67,12 @@ public class SpawnBorder extends JavaPlugin {
 					if (sender instanceof Player) {
 						Player p = (Player)sender;
 						Location pLoc = p.getLocation();
-						optionMap.put("center", pLoc.getBlockX() + "," + pLoc.getBlockZ());
+						World w = p.getWorld();
+						Environment env = w.getEnvironment();
+						
+						optionMap.put("center", pLoc.getX() + ","  + pLoc.getY() + "," + pLoc.getZ());
+						optionMap.put("world", w.getName());
+						optionMap.put("environment", env.name());
 					}
 				}
 				

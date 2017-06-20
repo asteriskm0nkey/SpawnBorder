@@ -68,11 +68,11 @@ public class SpawnBorder extends JavaPlugin {
 						Player p = (Player)sender;
 						Location pLoc = p.getLocation();
 						World w = p.getWorld();
-						Environment env = w.getEnvironment();
+						//Environment env = w.getEnvironment();
 						
 						optionMap.put("center", pLoc.getX() + ","  + pLoc.getY() + "," + pLoc.getZ());
 						optionMap.put("world", w.getName());
-						optionMap.put("environment", env.name());
+						//optionMap.put("environment", env.name());
 					}
 				}
 				

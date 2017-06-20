@@ -135,15 +135,6 @@ public final class BorderCommandBuilder {
 		long centreX = 0;
 		long guideY = 0;
 		long centre = 0;
-		/*
-		int dividerLoc = centerStr.indexOf(",");
-		// TODO more error checking on this string
-		if (centerStr.length() == 0 || dividerLoc == -1) {
-			throw new InvalidOptionException("Invalid format for option");
-		}
-		x = Long.parseLong(centerStr.substring(0, dividerLoc));
-		y = Long.parseLong(centreStr.)
-		z = Long.parseLong(centerStr.substring(dividerLoc + 1, centerStr.length()));*/
 		
 		try (Scanner coordScanner = new Scanner(centreStr)) {
 			coordScanner.useDelimiter(",");

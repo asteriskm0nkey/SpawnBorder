@@ -9,8 +9,6 @@ public class LocationHelper {
 	 * and would be prone to overflow problems in some contexts.
 	 */
 	
-	// FIXME test getHighestBlockYAt with LAVA, WATER or GLASS borders
-	
 	private static final int MINHEIGHT = 2;
 
 	public static long getHighestBlockYAt(World world, long x, long yGuide, long z) {

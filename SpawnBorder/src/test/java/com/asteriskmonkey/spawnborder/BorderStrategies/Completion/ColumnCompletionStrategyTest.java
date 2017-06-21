@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 
 import static org.mockito.Mockito.*;
 
@@ -32,7 +33,7 @@ public class ColumnCompletionStrategyTest {
 	@Test
 	public void getCompletedBorderLocationsEmptyList() throws InvalidArgumentException {
 		ColumnCompletionStrategy strat = new ColumnCompletionStrategy();
-		LinkedList<Location> locs = strat.getCompletedBorderLocations(new LinkedList<>());
+		List<Location> locs = strat.getCompletedBorderLocations(new LinkedList<>());
 		assertNotNull(locs);
 		assertEquals(0, locs.size());
 	}
@@ -49,7 +50,7 @@ public class ColumnCompletionStrategyTest {
 			skeletonList.add(l);
 		}
 		
-		LinkedList<Location> locs = strat.getCompletedBorderLocations(skeletonList);
+		List<Location> locs = strat.getCompletedBorderLocations(skeletonList);
 		
 		assertEquals(6, locs.size());
 		
@@ -59,7 +60,7 @@ public class ColumnCompletionStrategyTest {
 	public void getCompletedBorderLocations_HeightChange() throws InvalidArgumentException {
 		ColumnCompletionStrategy strat = new ColumnCompletionStrategy();
 		
-		LinkedList<Location> skeletonList = new LinkedList<>(
+		List<Location> skeletonList = new LinkedList<>(
 				Arrays.asList(
 						new Location(world, 0, 10, 0),
 						new Location(world, 0, 10, 1),
@@ -68,7 +69,7 @@ public class ColumnCompletionStrategyTest {
 						new Location(world, 0, 10, 4),
 						new Location(world, 0, 10, 5)));
 		
-		LinkedList<Location> locs = strat.getCompletedBorderLocations(skeletonList);
+		List<Location> locs = strat.getCompletedBorderLocations(skeletonList);
 		
 		assertEquals(8, locs.size());
 		

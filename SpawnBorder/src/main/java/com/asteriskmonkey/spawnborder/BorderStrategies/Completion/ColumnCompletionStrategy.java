@@ -1,6 +1,7 @@
 package com.asteriskmonkey.spawnborder.BorderStrategies.Completion;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
 
 import org.bukkit.Location;
@@ -10,7 +11,7 @@ import com.asteriskmonkey.spawnborder.Exceptions.InvalidArgumentException;
 public class ColumnCompletionStrategy implements BorderCompletionStrategy {
 
 	@Override
-	public LinkedList<Location> getCompletedBorderLocations(LinkedList<Location> skeletonBorder) throws InvalidArgumentException {
+	public List<Location> getCompletedBorderLocations(List<Location> skeletonBorder) throws InvalidArgumentException {
 		
 		if (skeletonBorder==null) {
 			throw new InvalidArgumentException();

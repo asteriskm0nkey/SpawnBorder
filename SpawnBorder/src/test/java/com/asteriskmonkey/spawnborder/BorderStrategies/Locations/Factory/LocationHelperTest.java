@@ -19,6 +19,10 @@ import com.asteriskmonkey.spawnborder.BorderStrategies.Locations.Factory.Locatio
 
 public class LocationHelperTest {
 
+	// TODO test sinking below water and trees
+	
+	// FIXME separate unit tests from Integration tests.
+	
 	@Mock World world;
 	
 	@Before

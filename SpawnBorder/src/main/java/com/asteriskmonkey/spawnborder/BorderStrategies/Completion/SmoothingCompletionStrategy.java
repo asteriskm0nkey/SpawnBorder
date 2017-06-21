@@ -1,13 +1,14 @@
 package com.asteriskmonkey.spawnborder.BorderStrategies.Completion;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import org.bukkit.Location;
 
 public class SmoothingCompletionStrategy implements BorderCompletionStrategy {
 
 	@Override
-	public LinkedList<Location> getCompletedBorderLocations(LinkedList<Location> skeletonBorder) {
+	public List<Location> getCompletedBorderLocations(List<Location> skeletonBorder) {
 		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException("Not yet implemented");
 	}

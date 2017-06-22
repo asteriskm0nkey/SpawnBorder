@@ -1,6 +1,5 @@
 package com.asteriskmonkey.spawnborder.BorderCommand;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import org.bukkit.Bukkit;

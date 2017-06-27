@@ -84,12 +84,10 @@ public class LocationHelper {
 		ListIterator<Location> li = locations.listIterator();
 		while (li.hasNext()) {
 			Location l = li.next();
-			Block b = l.getBlock();
-			Material blockMaterial = b.getType();
-			while (b.getY() > MINHEIGHT && materials.contains(blockMaterial)) {
-				b = b.getWorld().getBlockAt(b.getX(), b.getY() - 1, b.getZ());
-				blockMaterial = b.getType();
-				l = b.getLocation();
+			Material blockMaterial = l.getBlock().getType();
+			while (l.getBlockY() > MINHEIGHT && materials.contains(blockMaterial)) {
+				l.setY(l.getBlockY() - 1);
+				blockMaterial = l.getBlock().getType();
 			}
 			returnLocations.add(l);
 		}
@@ -102,6 +100,8 @@ public class LocationHelper {
 		return sinkBelowMaterial(basicLocations, Arrays.asList(materials));
 	}
 
+	
+	
 	// Pass in a Block, get back the correct block if it was a tree or water
 	// source etc
 	private Block getBlock(World w, int x, int z) {

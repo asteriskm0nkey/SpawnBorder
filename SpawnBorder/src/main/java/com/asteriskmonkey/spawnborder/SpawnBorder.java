@@ -100,6 +100,9 @@ public class SpawnBorder extends JavaPlugin {
 				sender.sendMessage(bc.toString());
 				
 				// Execute the border command, affecting the world with the defined strategies
+				
+				// TODO refactor to allow the user to choose between strategies, when they have been implemented?
+				
 				BorderCommandExecutor bce = new BorderCommandExecutor(
 						new SimpleBorderLocationStrategy(),
 						new ColumnCompletionStrategy());

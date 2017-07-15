@@ -62,7 +62,7 @@ public class LocationHelper {
 	
 	public static List<Location> sinkBelowPlants(List<Location> basicLocations) {
 		Material[] materials = { 
-				Material.LEAVES, Material.LOG, Material.LOG_2, Material.SAPLING,
+				Material.LEAVES, Material.LEAVES_2, Material.LOG, Material.LOG_2, Material.SAPLING,
 				Material.DOUBLE_PLANT, Material.LONG_GRASS, Material.VINE, Material.DEAD_BUSH,
 				Material.SUGAR_CANE_BLOCK, Material.COCOA, Material.CACTUS,
 				Material.YELLOW_FLOWER, Material.RED_ROSE,
@@ -100,7 +100,12 @@ public class LocationHelper {
 		return sinkBelowMaterial(basicLocations, Arrays.asList(materials));
 	}
 
+	/*
+	public static List<Location> removeTrees(List<Location> basicLocations) {
+		
+	}*/
 	
+	// TODO check / remove the below depending on whether they're used for the tree removal process.
 	
 	// Pass in a Block, get back the correct block if it was a tree or water
 	// source etc

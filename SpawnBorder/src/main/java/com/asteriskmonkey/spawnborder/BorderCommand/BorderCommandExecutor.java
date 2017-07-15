@@ -18,8 +18,7 @@ import com.asteriskmonkey.spawnborder.BorderStrategies.Locations.Factory.Locatio
 import com.asteriskmonkey.spawnborder.Exceptions.InvalidArgumentException;
 
 public class BorderCommandExecutor {
-	// Executes a BorderCommand object. Translates the bordercommand settings
-	// into changes to the world.
+	// Executes a BorderCommand object. Translates the bordercommand settings into changes to the world.
 
 	// interacts with the world etc AND
 	// saves details of what changes were made in order to provide an undo of
@@ -27,8 +26,6 @@ public class BorderCommandExecutor {
 
 	// TODO SRP broken by "and" above. Split further.
 	// Undo might not be necessary with regenerateChunk? Give both options?
-
-	// TODO becoming spaghetti code. Refactor
 
 	private BorderLocationStrategy locationStrategy;
 	private BorderCompletionStrategy completionStrategy;
@@ -56,11 +53,11 @@ public class BorderCommandExecutor {
 		List<Location> basicBorderLocs = locationStrategy.getBorderLocations(bc.getWorld(), bc.getCenterX(),
 				bc.getGuideY(), bc.getCenterZ(), bc.getLength(), bc.getWidth(), bc.getShape());
 
-		basicBorderLocs = LocationHelper.sinkBelowPlants(basicBorderLocs);
-		
 		if (bc.getRemoveTrees()) {
-			// removeTrees(highestBlocks);
+			//basicBorderLocs = LocationHelper.removeTrees(basicBorderLocs);
 		}
+		
+		basicBorderLocs = LocationHelper.sinkBelowPlants(basicBorderLocs);
 		
 		if (bc.getSinkBelowWater()) {
 			basicBorderLocs = LocationHelper.sinkBelowWater(basicBorderLocs);
